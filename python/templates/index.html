@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type"
+ content="text/html; charset=UTF-8">
+  <title>index</title>
+<!--link type="text/css"  href="cssfiles/mainpagecss.css" rel="stylesheet"-->
+<style media="screen" type="text/css">
+    table {
+        border-collapse: collapse;
+    }
+
+    table, th, td {
+        border: 1px solid gray;
+        padding: 3px; margin: 2px;
+    }
+</style>
+</head>
+<body>
+<table
+ style="width: 100%; text-align: left; margin-left: auto; margin-right: auto;"
+ border="0" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td>
+      <h1><span class="headertext">
+		Prosoft.ComeTogether<small> (Совместные поездки и мероприятия)</small>
+      </span></h1>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<input type="button" onclick='location.href="/trip/new"' value='Добавить поездку' style="width:100%"/>
+<br/>
+<br/>
+    <table style="border-collapse: collapse; border: 1px solid gray; width: 100%">
+        <tr>
+            <td></td>
+            <td></td>
+            <th style="width: 10%">Водитель</th>
+            <th style='width: 85px'>Время</th>
+            <th style="width: 8%">Откуда</th>
+            <th style="width: 15%">Куда</th>
+            <th>Подробности</th>
+            <td >понед.<!--a href="/0">понед.</a--></td>
+            <td >вторник<!--a href="/1">вторник</a--></td>
+            <td >среда<!--a href="/2">среда</a--></td>
+            <td >четверг<!--a href="/3">четверг</a--></td>
+            <td >пятница<!--a href="/4">пятница</a--></td>
+            <td >суббота<!--a href="/5">суббота</a--></td>
+            <td >воскр.<!--a href="/6">воскр.</a--></td>
+       </tr>
+        %for idx, trip in enumerate(trips):
+        <tr style="background-color:aliceblue">
+            <td width="10px">
+                <input type="button" value='x' 
+                    onclick='location.href="/trip/{{idx}}/remove"'  
+                    title="Удалить поездку" 
+                    style="background-color:pink; width: 100%"/>
+            </td>
+            <td width="10px">
+                <input type="button" value='!' 
+                    onclick='location.href="/trip/{{idx}}/modify"' 
+                    title="Редактировать поездку" 
+                    style="background-color:yellow; width: 100%"/>    
+            </td>
+            <td>{{trip['driver']}}</td>
+            %d = trip['delay']
+            %dd = (d == '0') and ' ' or '±%dмин' % int(d)
+            <td>{{trip['time']}} <small style="color:grey">{{dd}}</small></td>
+            <td><i>{{trip['from']}}</i></td>
+            <td><i>{{trip['to']}}</i></td>
+            <td><small>{{trip['desc']}}</small></td>
+            
+            %for r in range(0, 7):
+                %if r == 1 or r == 3 or r == 5:
+            <td style='background-color:lightgray; text-align: center' >
+                %else:
+            <td style='background-color:lightcyan; text-align: center' >
+                %end
+                %seats = trip["days"][r]["seats"]
+                %guests = trip["days"][r]["guests"]
+                %free = seats - guests
+                %if seats > 0:
+                    <!-- 😀 😂 🤣 😉 😎 🤔 😐 🙄 🤑 😨 😱 😈 👽✋ 👍 👎 ✊ 💣 💥 🍿 🍩 🌎 🌐 🛑 ✈ 🔥 ✨ 🎉 🏆 ☎ 💾 🎥 💡 💰 ✉ 🔧-->
+                    %disabled = (guests == 0) and 'disabled' or '' 
+                    %title = guests == 0 and 'Нет желающих' or '(Отмена) Нажмите, если передумали'
+                    <small>
+                    <input type='button'
+                        {{disabled}}
+                        onclick='location.href="/trip/{{idx}}/{{r}}/left"' 
+                        value='{{guests}}/{{seats}}' 
+                        title="{{title}}" 
+                        style="text-align: center; width: 40px; background-color:lemonchiffon"/>
+                    </small>
+                    %disabled = (free == 0) and 'disabled' or '' 
+                    %title = (free == 0) and 'Нет свободных мест' or "ещё мест: %d" % free
+                    %val = (free == 0) and '✈' or 'еду!'
+                    <input type='button'
+                        {{disabled}}
+                        onclick='location.href="/trip/{{idx}}/{{r}}/join"' 
+                        value='{{val}}' 
+                        title="{{title}}" 
+                        style="text-align: center; width: 40px; background-color: greenyellow"/>
+                %end
+            </td>
+            %end
+           
+        </tr>
+        %end
+    </table>
+</body>
+</html>

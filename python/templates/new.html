@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type"
+ content="text/html; charset=UTF-8">
+  <title>index</title>
+  <!--link type="text/css"  href="cssfiles/mainpagecss.css" rel="stylesheet"-->
+</head>
+<body>
+<table
+ style="width: 100%; text-align: left; margin-left: auto; margin-right: auto;"
+ border="0" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td>
+      <h1><span class="headertext">
+      Prosoft.ComeTogether
+      </span></h1>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<form action="/trip/edit" method="POST">
+    <table border="0" style="background-color:aliceblue; 
+        border-style: solid; padding: 5px; width: 920px">
+        <tr>
+            <td style="width: 7em">Время:</td> 
+            <td colspan="7" style="width: 100%">
+            <select name="time">
+                %for h in range(23, -1, -1):
+                    %hh = '%02d' % h
+                    %for m in range(50, -10, -10):
+                        %hhmm = hh + ':%02d' % m
+                        %default = (hhmm == trip['time']) and 'selected' or ''
+                        <option {{default}} value="{{hhmm}}">{{hhmm}}</option>
+                    %end
+                %end
+            </select>
+            <select name="delay">
+                    %for m in range(0, 65, 5):
+                        %mm = (m == 0) and 'ровно' or '±%02d мин.' % m
+                        %default = (m == int(trip['delay'])) and 'selected' or ''
+                        <option {{default}} value="{{m}}">{{mm}}</option>
+                    %end
+            </select> 
+            </td>
+        </tr>
+        <tr>
+            <td>Откуда:</td>
+            <td colspan="7"><input type="text" 
+                title="Место отправки" name="frm"/ value="{{trip['from']}}"></td>
+        </tr>
+        <tr>
+            <td>Куда:</td>
+            <td colspan="7"><input type="text" 
+                title="Место\район назначения" name="to" value="{{trip['to']}}"/></td>
+        </tr>
+        <tr>
+            <td>Водитель:  </td>
+            <td colspan="7"><input type="text" 
+                title="Укажите свое Имя, Фамилию" name="driver" value="{{trip['driver']}}"/></td>
+        </tr>
+        <tr>
+            <td>Подробности:  </td>
+            <td colspan="7"><input type="text" 
+                title="Подробности поездки" style="width:100%" name="desc" value="{{trip['desc']}}"/></td>
+        </tr>
+        <tr style='background-color:greenyellow'>
+            <td>Мест:</td>
+            %days = ['понедельник','вторник','среда','четверг','пятница','суббота','воскресенье']
+            %for day in range(0,7):
+                <td> {{days[day]}}
+                <select name="seats{{day}}" style="width:100%">
+                    %for s in range(10, -1, -1):
+                        %ss = (s == 0) and 'Не еду' or s
+                        %default = (trip["days"][day]["seats"] == s) and 'selected' or ''
+                        <option {{default}} value="{{s}}">{{ss}}</option>
+                    %end
+                </select>
+                <input type='hidden' name='guests{{day}}' value='{{trip["days"][day]["guests"]}}'/>
+                </td>
+            %end
+        </tr>
+        <input type='hidden' value='{{id}}' name='id'/>
+    </table>
+        <p>
+            <input type="submit" 
+                %if id == -1:
+                    value="Создать поездку" 
+                %else:
+                    value="Изменить поездку" 
+                %end
+                style="width: 920px">
+        </p>
+</form>
+</body>
+</html>
