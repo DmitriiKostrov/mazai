@@ -1,0 +1,42 @@
+table {
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid gray;
+    padding: 3px; margin: 2px;
+}
+#tripTable {
+    border-collapse: collapse; 
+    border: 1px solid gray; 
+    width: 100%
+}
+#tripTable tr {
+    background-color:lemonchiffon
+}
+#tripTable tr td:first-child {
+    background-color:pink; 
+}
+#tripTable tr td:nth-child(2) {
+    background-color:yellow; 
+}
+#tripTable tr td:nth-child(8), td:nth-child(10), td:nth-child(12){
+    background-color:lightgray; 
+    text-align: center
+}
+#tripTable tr td:nth-child(9), td:nth-child(11), td:nth-child(13){
+    background-color:lightcyan; 
+    text-align: center
+}
+
+.goButton {
+    text-align: center; 
+    width: 40px; 
+    background-color: greenyellow
+}
+
+.ungoButton {
+    text-align: center; 
+    width: 40px; 
+    background-color:lemonchiffon
+}
