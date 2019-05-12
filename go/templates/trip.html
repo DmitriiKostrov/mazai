@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="/static/js/mazai.js"></script>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>index</title>
+<!--link type="text/css"  href="cssfiles/mainpagecss.css" rel="stylesheet"-->
+<link rel="stylesheet" type="text/css" href="/static/mazai.css"></style>
+<script>
+function submit_form() {
+    $.post('/trip/{{.ID}}', $('#trip_form').serialize());
+    location.href = "/";
+}
+
+$(function() {
+    $.ajax({
+        url: "/trip/{{.ID}}",
+        dataType: "json"
+    }).done(function(trip) {  
+        //var delay = trip['delay'];
+        //var delayText = (delay == '0') ? ' ' : '±' + delay + 'мин';
+        for (var i = 23; i >= 0; i--) {
+            var hh = ("0" + i).slice(-2);
+            for (var j = 50; j >= 0; j -= 10) {
+                var mm = ("0" + j).slice(-2);
+                var t = hh + ':' + mm;
+                $('#time').append('<option>' + t + '</option>');
+            }
+        }
+        $.each(['from', 'to', 'driver', 'desc', 'delay', 'time'], (x,y) => {
+            $('#' + y).val(trip[y]);    
+        });
+
+        var tr = $('#seats_tr');
+        var days = ['понедельник','вторник','среда','четверг','пятница','суббота','воскресенье'];
+        for (var day = 0; day < 7; day++) {
+            var td = '<td>' + days[day] + 
+                '<input type="hidden" name="guests' + day + '" value="' + trip["days"][day]["guests"] +'"/>' +
+                '<select name="seats' + day + '" style="width:100%">'; 
+            for (var s = 10; s >= 0; s--) {
+                var ss = (s == 0) ? 'Не еду' : s;
+                var def = (trip["days"][day]["seats"] == s) ? 'selected' : '';
+                td += '<option ' + def + ' value="' + s + '">' + ss + '</option>';
+            }
+            td += '</select></td>';
+            $('#seats_tr').append(td);
+        }
+    });
+});
+
+</script>
+</head>
+<body>
+<table
+ style="width: 100%; text-align: left; margin-left: auto; margin-right: auto;"
+ border="0" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td>
+      <h1><span class="headertext">
+      Prosoft.ComeTogether
+      </span></h1>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<form id="trip_form">
+    <table border="0" style="background-color:bisque; 
+        border-style: solid; padding: 5px; width: 920px">
+        <tr>
+            <td style="width: 7em">Время:</td> 
+            <td colspan="7" style="width: 100%">
+            <select name="time" id="time">
+            </select>
+            <select name="delay" id="delay">
+                <option value="10">±10 мин.</option>
+                <option value="20">±20 мин.</option>
+                <option value="30">±30 мин.</option>
+                <option value="40">±40 мин.</option>
+                <option value="50">±50 мин.</option>
+                <option value="60">±60 мин.</option>
+            </select> 
+            </td>
+        </tr>
+        <tr>
+            <td>Откуда:</td>
+            <td colspan="7"><input type="text" 
+                title="Место отправки" name="from" id="from" value="from"></td>
+        </tr>
+        <tr>
+            <td>Куда:</td>
+            <td colspan="7"><input type="text" 
+                title="Место\район назначения" name="to" id="to" value="to"/></td>
+        </tr>
+        <tr>
+            <td>Водитель:  </td>
+            <td colspan="7"><input type="text" 
+                title="Укажите свое Имя, Фамилию" name="driver" id="driver" value="driver"/></td>
+        </tr>
+        <tr>
+            <td>Подробности:  </td>
+            <td colspan="7"><input type="text" 
+                title="Подробности поездки" style="width:100%" name="desc" id="desc" value="desc"/></td>
+        </tr>
+        <tr style='background-color:greenyellow' id="seats_tr">
+            <td>Мест:</td>
+        </tr>
+        <input type='hidden' value='{{.ID}}' name='id'/>
+    </table>
+        <p>
+            <input type="button" onclick="submit_form();" value="Применить"
+                style="width: 920px">
+        </p>
+</form>
+</body>
+</html>
