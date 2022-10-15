@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="/static/js/mazai.js"></script>
+
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>index</title>
+<!--link type="text/css"  href="cssfiles/mainpagecss.css" rel="stylesheet"-->
+<link rel="stylesheet" type="text/css" href="/static/mazai.css"></style>
+<script>
+function changeTrip(url, method) {
+  $.ajax({
+      url: url,
+      type: method,
+      success: function(result) {
+          get_all_trips();
+      },
+      error: function(result) {
+        alert(result);
+      }
+  });
+}
+
+function get_all_trips() {
+  $.ajax({
+      url: "trips",
+      dataType: "json"
+      }).done(function(trips) {
+          $('#trips tr').remove();
+          for (var i = 0; i < trips.length; i++) {
+              
+              var trip = trips[i];
+              var tr = 
+                  '<td width="10px">' +
+                      '<input type="button" value="x"' + 
+                          'onclick=\'changeTrip("/trip/' + i + '", "DELETE");\''  +
+                          'title="Удалить поездку"' + 
+                  '</td>' +
+                  '<td width="10px">' + 
+                  '    <input type="button" value="!" ' +
+                  '        onclick=\'location.href="/trip/' + i + '/edit"\' ' + 
+                  '        title="Редактировать поездку"' + 
+                  '</td>';
+
+              var delay = trip['delay'];
+              var delayText = (delay == '0') ? ' ' : '±' + delay + 'мин';
+              tr += '<td>'        + trip['time']   + '<small> '     + delayText + '</small></td>' + 
+                    '<td><i>'     + trip['from']   + '</i></td>'    +
+                    '<td><i>'     + trip['to']     + '</i></td>'    + 
+                    '<td><small>' + trip['desc']   + '</small></td>'+ 
+                    '<td>'        + trip['driver'] + '</td>';
+              
+              for (var r = 0; r < 7; r++) {
+                  var td     = '<td>';
+                  var seats  = trip["days"][r]["seats"];
+                  var guests = trip["days"][r]["guests"];
+                  var free   = seats - guests;
+                  if (seats > 0) {
+                      var disabled = (guests == 0) ? 'disabled' : '';
+                      var title = (guests == 0) ? 'Нет желающих' : '(Отмена) Нажмите, если передумали';
+                      td += '<small>' + 
+                              '<input type="button"' + disabled + 
+                                ' onclick=\'changeTrip("/trip/' + i + '/' + r + '/guest", "DELETE");\''  +
+                                ' value="' + guests + '/' + seats + '"' + 
+                                ' title="' + title  + '"' + 
+                                ' class="ungoButton"/>' + 
+                              '</small>';
+                      disabled = (free == 0) ? 'disabled' : '' ;
+                      title    = (free == 0) ? 'Нет свободных мест' : "ещё мест: " + free;
+                      var val  = (free == 0) ? '✈' : 'еду!';
+                      td += "<input type='button'" + disabled + 
+                            ' onclick=\'changeTrip("/trip/' + i + '/' + r + '/guest", "POST");\''  +
+                            ' value="' + val   + '"' +  
+                            ' title="' + title + '"' +
+                            ' class="goButton"/>';
+                  }
+                  tr += td + '</td>';
+              }
+
+              $('#trips').append($('<tr>' + tr + '</tr>'));
+          }
+      });
+}
+
+$(function() {
+   get_all_trips();
+});
+</script>
+</head>
+<body>
+<table
+ style="width: 100%; text-align: left; margin-left: auto; margin-right: auto;"
+ border="0" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td>
+      <h1><span class="headertext">
+		Prosoft.ComeTogether<small> (Совместные поездки и мероприятия)</small>
+      </span></h1>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<input type="button" onclick='location.href="/trip/-1/edit"' value='Добавить поездку' style="width:100%"/>
+<br/>
+<br/>
+    <table id="tripTable">
+        <tr>
+            <td style="width: 15px"></td>
+            <td style="width: 15px"></td>
+            <th style='width: 85px'>Время</th>
+            <th style="width: 8%">Откуда</th>
+            <th style="width: 15%">Куда</th>
+            <th>Подробности</th>
+            <th style="width: 10%">Водитель</th>
+            <td >понед.<!--a href="/0">понед.</a--></td>
+            <td >вторник<!--a href="/1">вторник</a--></td>
+            <td >среда<!--a href="/2">среда</a--></td>
+            <td >четверг<!--a href="/3">четверг</a--></td>
+            <td >пятница<!--a href="/4">пятница</a--></td>
+            <td >суббота<!--a href="/5">суббота</a--></td>
+            <td >воскр.<!--a href="/6">воскр.</a--></td>
+       </tr>
+       <tbody id="trips">
+        </tbody>
+    </table>
+</body>
+</html>
