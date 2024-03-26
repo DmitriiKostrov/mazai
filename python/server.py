@@ -105,4 +105,4 @@ def error505(error):
     return 'Nothing here, sorry, hehe'
 
 init_trips()
-run(host='172.19.25.172', port=8585, debug=True)
+run(host='0.0.0.0', port=8585, debug=True)
