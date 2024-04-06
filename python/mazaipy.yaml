@@ -19,6 +19,7 @@ spec:
         image: dimage1/mazaipy
         ports:
         - containerPort: 8080
+          name: http-web-svc
 ---
 apiVersion: v1
 kind: Service
@@ -31,5 +32,5 @@ spec:
     - name: http
       protocol: TCP
       port: 80
-      targetPort: 8080
+      targetPort:  http-web-svc
   type: LoadBalancer
