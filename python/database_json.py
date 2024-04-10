@@ -1,7 +1,7 @@
 import os, json
 from datetime import datetime, timedelta
 
-MAIN_FILE='trips.json'
+MAIN_FILE=os.environ.get('dataFile', 'trips.json')
 TODAY_CACHE=[]
 
 def init_trips():

@@ -5,7 +5,7 @@ metadata:
   labels:
     app: mazaipy
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: mazaipy
@@ -16,10 +16,21 @@ spec:
     spec:
       containers:
       - name: mazaipy
+        imagePullPolicy: Always
         image: dimage1/mazaipy
+        env:
+        - name: dataFile
+          value: "/data/trips.json"
         ports:
         - containerPort: 8080
           name: http-web-svc
+        volumeMounts:
+        - mountPath: "/data"
+          name: data
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: mazai-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -34,3 +45,32 @@ spec:
       port: 80
       targetPort:  http-web-svc
   type: LoadBalancer
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mazai-pv
+spec:
+  capacity:
+    storage: 20Mi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: standard
+  hostPath:
+    path: /data/mazaipy
+    type: Directory
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mazai-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 20Mi
+
